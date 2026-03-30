@@ -5,6 +5,7 @@ import {
     collection,
     getDocs,
     updateDoc,
+    addDoc,
     doc,
     query,
     where
@@ -15,6 +16,8 @@ import emailjs from "@emailjs/browser"
 export default function AdminDashboard() {
 
     const [requests, setRequests] = useState([])
+    const [inventory, setInventory] = useState([])
+    const [newProduct, setNewProduct] = useState({ name: "", available: 0 })
     const [stats, setStats] = useState({
         total: 0,
         pending: 0,
@@ -23,6 +26,7 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         loadRequests()
+        loadInventory()
     }, [])
 
     const loadRequests = async () => {
@@ -56,6 +60,35 @@ export default function AdminDashboard() {
             approved
         })
 
+    }
+
+    // INVENTORY FUNCTIONS
+    const loadInventory = async () => {
+        const snapshot = await getDocs(collection(db, "products"))
+        const list = []
+        snapshot.forEach(docSnap => {
+            list.push({ id: docSnap.id, ...docSnap.data() })
+        })
+        setInventory(list)
+    }
+
+    const handleAddProduct = async (e) => {
+        e.preventDefault()
+        if (!newProduct.name.trim() || newProduct.available < 0) return
+        await addDoc(collection(db, "products"), {
+            name: newProduct.name.trim(),
+            available: Number(newProduct.available)
+        })
+        setNewProduct({ name: "", available: 0 })
+        loadInventory()
+    }
+
+    const handleUpdateQuantity = async (id, currentQty, amount) => {
+        const newQty = currentQty + amount
+        if (newQty < 0) return
+        const productRef = doc(db, "products", id)
+        await updateDoc(productRef, { available: newQty })
+        loadInventory()
     }
 
     // EMAIL FUNCTION
@@ -332,6 +365,101 @@ export default function AdminDashboard() {
                             {history.length === 0 && (
                                 <tr>
                                     <td colSpan="7" style={{ ...tdStyle, textAlign: "center", color: "var(--text-muted)" }}>No request history.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Inventory Management Section */}
+                <div className="glass-panel" style={{ padding: "30px", marginTop: "50px", overflowX: "auto" }}>
+                    <h2 style={{ marginBottom: "20px", color: "var(--text-main)" }}>Inventory Management</h2>
+                    
+                    {/* Add Product Form */}
+                    <form onSubmit={handleAddProduct} style={{
+                        display: "flex", gap: "15px", marginBottom: "30px", alignItems: "flex-end", flexWrap: "wrap"
+                    }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "5px", flex: "1", minWidth: "200px" }}>
+                            <label style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>New Device Name</label>
+                            <input 
+                                type="text" 
+                                placeholder="e.g. Meta Quest 3" 
+                                value={newProduct.name}
+                                onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                                style={{
+                                    padding: "10px 15px", borderRadius: "8px", border: "1px solid var(--border-color)",
+                                    backgroundColor: "rgba(255, 255, 255, 0.05)", color: "var(--text-main)"
+                                }} 
+                                required
+                            />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "5px", width: "120px" }}>
+                            <label style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Initial Qty</label>
+                            <input 
+                                type="number" 
+                                min="0" 
+                                value={newProduct.available}
+                                onChange={(e) => setNewProduct({...newProduct, available: e.target.value})}
+                                style={{
+                                    padding: "10px 15px", borderRadius: "8px", border: "1px solid var(--border-color)",
+                                    backgroundColor: "rgba(255, 255, 255, 0.05)", color: "var(--text-main)"
+                                }} 
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="btn-primary" style={{ padding: "10px 20px", height: "42px" }}>
+                            Add Device
+                        </button>
+                    </form>
+
+                    <table style={tableStyle}>
+                        <thead>
+                            <tr>
+                                <th style={thStyle}>Device Name</th>
+                                <th style={thStyle}>Available Quantity</th>
+                                <th style={thStyle}>Update Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {inventory.map((item) => (
+                                <tr key={item.id} style={trStyle}>
+                                    <td style={tdStyle}><strong>{item.name}</strong></td>
+                                    <td style={tdStyle}>
+                                        <span style={{ 
+                                            padding: "5px 15px", 
+                                            borderRadius: "15px", 
+                                            backgroundColor: item.available > 0 ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)",
+                                            color: item.available > 0 ? "#10b981" : "#ef4444",
+                                            fontWeight: "bold"
+                                        }}>
+                                            {item.available} Units
+                                        </span>
+                                    </td>
+                                    <td style={tdStyle}>
+                                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                                            <button 
+                                                onClick={() => handleUpdateQuantity(item.id, item.available, -1)}
+                                                className="btn-primary" 
+                                                style={{ padding: "5px 15px", backgroundColor: "rgba(255, 255, 255, 0.1)", color: "var(--text-main)" }}
+                                                disabled={item.available <= 0}
+                                            >
+                                                -
+                                            </button>
+                                            <span style={{ width: "20px", textAlign: "center", color: "var(--text-main)" }}>{item.available}</span>
+                                            <button 
+                                                onClick={() => handleUpdateQuantity(item.id, item.available, 1)}
+                                                className="btn-primary" 
+                                                style={{ padding: "5px 15px", backgroundColor: "rgba(255, 255, 255, 0.1)", color: "var(--text-main)" }}
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {inventory.length === 0 && (
+                                <tr>
+                                    <td colSpan="3" style={{ ...tdStyle, textAlign: "center", color: "var(--text-muted)" }}>No inventory devices found.</td>
                                 </tr>
                             )}
                         </tbody>

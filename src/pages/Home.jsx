@@ -76,6 +76,23 @@ const Home = () => {
         });
       }
       
+      // Fade canvas out exactly after Work Section (trigged perfectly because it's defined after the pin)
+      gsap.to('#canvas-container', {
+        opacity: 0.15, 
+        filter: 'blur(5px)',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#facts-section',
+          start: 'top bottom', // Executes genuinely when facts-section hits the bottom of the viewport
+          end: 'top center',
+          scrub: 1,
+        }
+      });
+      
+      // Crucial: after we construct the new pinned scrub timeline (which changes vertical heights),
+      // we must force GSAP to refresh all external ScrollTriggers (like the 3D model)
+      setTimeout(() => ScrollTrigger.refresh(), 100);
+
     }, mainRef);
 
     return () => ctx.revert();
@@ -159,7 +176,7 @@ const Home = () => {
       </section>
 
       {/* SECTION: Facts / Stats */}
-      <section id="facts-section" style={{ padding: '100px 10%', display: 'flex', justifyContent: 'space-between', gap: '40px', flexWrap: 'wrap', backgroundColor: 'var(--bg-color)' }}>
+      <section id="facts-section" style={{ padding: '100px 10%', display: 'flex', justifyContent: 'space-between', gap: '40px', flexWrap: 'wrap', background: 'transparent' }}>
         <div className="glass-panel" style={{ flex: 1, padding: '40px', textAlign: 'center' }}>
           <Activity size={40} color="var(--accent-color)" style={{ marginBottom: '20px' }} />
           <h3 style={{ fontSize: '4rem', margin: 0 }} className="stat-counter" data-target="150">0</h3>
@@ -178,7 +195,7 @@ const Home = () => {
       </section>
 
       {/* SECTION: Projects */}
-      <section id="projects-section" style={{ padding: '100px 10%', background: 'var(--bg-color-alt)' }}>
+      <section id="projects-section" style={{ padding: '100px 10%', background: 'transparent' }}>
         <h2 className="reveal-text text-gradient" style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '60px' }}>Ongoing Innovations</h2>
         
         {projects.length === 0 ? (
@@ -214,7 +231,7 @@ const Home = () => {
       </section>
 
       {/* SECTION: Collaborators (Marquee) */}
-      <section id="collaborators-section" style={{ padding: '60px 0', backgroundColor: 'var(--accent-color)', color: '#fff', overflow: 'hidden' }}>
+      <section id="collaborators-section" style={{ padding: '60px 0', backgroundColor: 'rgba(0, 115, 103, 0.85)', backdropFilter: 'blur(5px)', color: '#fff', overflow: 'hidden' }}>
         <h3 style={{ textAlign: 'center', color: '#fff', marginBottom: '40px' }} className="reveal-text">Supported By Industry Leaders</h3>
         <div style={{ display: 'flex', width: '200%', animation: 'marquee 15s linear infinite' }}>
           {[1,2,3,4,5,6,7,8].map(i => (
@@ -232,7 +249,7 @@ const Home = () => {
       </section>
 
       {/* SECTION: Management Body */}
-      <section id="management-section" style={{ padding: '100px 10%', background: 'var(--bg-color-alt)' }}>
+      <section id="management-section" style={{ padding: '100px 10%', background: 'transparent' }}>
         <h2 className="reveal-text text-gradient" style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '60px' }}>Leadership & Engineering</h2>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '40px', justifyContent: 'center' }}>
           {[

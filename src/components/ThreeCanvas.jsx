@@ -60,7 +60,7 @@ const StandaloneVRHeadsetModel = () => {
       });
       tl2.to(scrollGroupRef.current.position, { x: 1.5, z: -1, ease: 'none' })
         .to(scrollGroupRef.current.rotation, { y: Math.PI / 2.5, ease: 'none' }, 0);
-        
+
       // Work section tween
       const tl3 = gsap.timeline({
         scrollTrigger: {
@@ -73,6 +73,7 @@ const StandaloneVRHeadsetModel = () => {
       });
       tl3.to(scrollGroupRef.current.position, { x: -1.5, z: 1, ease: 'none' })
         .to(scrollGroupRef.current.rotation, { y: -Math.PI / 3, z: Math.PI / 12, ease: 'none' }, 0);
+
     });
 
     return () => ctx.revert();

@@ -15,7 +15,7 @@ const Navbar = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
       zIndex: 50,
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      backgroundColor: '#007367',
       backdropFilter: 'blur(10px)',
       borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
       color: '#fff'
@@ -23,23 +23,23 @@ const Navbar = () => {
       <h2 style={{ margin: 0 }}>
         <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ color: '#fff', textDecoration: 'none' }}>CXR</Link>
       </h2>
-      
+
       <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
         <Link to="/" style={linkStyle}>Home</Link>
         <a href="/#mission-section" style={linkStyle}>Mission & Vision</a>
         <a href="/#work-section" style={linkStyle}>Field of Work</a>
         <a href="/#projects-section" style={linkStyle}>Projects</a>
         <Link to="/contact" style={linkStyle}>Contact Us</Link>
-        
-        <div 
-          style={{ position: 'relative' }} 
+
+        <div
+          style={{ position: 'relative' }}
           onMouseEnter={() => setDropdownOpen(true)}
           onMouseLeave={() => setDropdownOpen(false)}
         >
           <button style={{ ...linkStyle, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
             Add More <ChevronDown size={16} />
           </button>
-          
+
           {dropdownOpen && (
             <div style={{
               position: 'absolute',

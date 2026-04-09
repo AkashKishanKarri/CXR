@@ -36,9 +36,9 @@ const Home = () => {
       // Fade in text effects
       const textRevealElements = gsap.utils.toArray('.reveal-text');
       textRevealElements.forEach((el) => {
-        gsap.fromTo(el, 
+        gsap.fromTo(el,
           { y: 50, opacity: 0 },
-          { 
+          {
             y: 0, opacity: 1, duration: 1, ease: 'power3.out',
             scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
           }
@@ -48,8 +48,8 @@ const Home = () => {
       // Counters
       const counters = gsap.utils.toArray('.stat-counter');
       counters.forEach((counter) => {
-        gsap.fromTo(counter, 
-          { innerHTML: 0 }, 
+        gsap.fromTo(counter,
+          { innerHTML: 0 },
           {
             innerHTML: counter.dataset.target,
             duration: 2,
@@ -58,7 +58,7 @@ const Home = () => {
           }
         );
       });
-      
+
       // Horizontal Scroll for "Work Section"
       const horizontalContainer = document.querySelector('.horizontal-scroll-container');
       if (horizontalContainer) {
@@ -75,10 +75,10 @@ const Home = () => {
           }
         });
       }
-      
+
       // Fade canvas out exactly after Work Section (trigged perfectly because it's defined after the pin)
       gsap.to('#canvas-container', {
-        opacity: 0.15, 
+        opacity: 0.15,
         filter: 'blur(5px)',
         ease: 'none',
         scrollTrigger: {
@@ -88,7 +88,7 @@ const Home = () => {
           scrub: 1,
         }
       });
-      
+
       // Crucial: after we construct the new pinned scrub timeline (which changes vertical heights),
       // we must force GSAP to refresh all external ScrollTriggers (like the 3D model)
       setTimeout(() => ScrollTrigger.refresh(), 100);
@@ -114,7 +114,7 @@ const Home = () => {
         </p>
         <div className="reveal-text" style={{ marginTop: '30px' }}>
           <button className="btn-primary" onClick={() => document.getElementById('mission-section').scrollIntoView({ behavior: 'smooth' })}>
-            Explore Our Vision <ChevronRight size={20} style={{marginLeft: '8px'}} />
+            Explore Our Vision <ChevronRight size={20} style={{ marginLeft: '8px' }} />
           </button>
         </div>
       </section>
@@ -122,7 +122,7 @@ const Home = () => {
       {/* SECTION: Mission & Vision */}
       <section id="mission-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', padding: '100px 10%', background: 'linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0.95))' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', width: '100%' }}>
-          
+
           <div className="glass-panel text-content reveal-text" style={{ padding: '60px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <Target size={48} color="var(--accent-color)" />
             <h2 className="text-gradient" style={{ fontSize: '2.5rem' }}>Our Mission</h2>
@@ -145,33 +145,33 @@ const Home = () => {
       {/* SECTION: Fields of Work (Horizontal Scroll) */}
       <section id="work-section" style={{ height: '100vh', overflow: 'hidden', position: 'relative', background: 'transparent' }}>
         <h2 className="reveal-text text-gradient" style={{ fontSize: '3rem', position: 'absolute', top: '10%', left: '10%', zIndex: 2 }}>Fields of Work</h2>
-        
+
         <div className="horizontal-scroll-container" style={{ display: 'flex', width: '400vw', height: '100%', alignItems: 'center', paddingLeft: '10vw' }}>
-          
+
           <div className="glass-panel" style={{ width: '70vw', height: '50vh', flexShrink: 0, marginRight: '10vw', padding: '60px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <MonitorPlay size={64} color="var(--accent-color)" style={{ marginBottom: '30px' }} />
             <h3 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>Virtual Reality (VR)</h3>
             <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>Creating fully immersive digital environments for training, simulation, and entertainment using state-of-the-art headsets.</p>
           </div>
-          
+
           <div className="glass-panel" style={{ width: '70vw', height: '50vh', flexShrink: 0, marginRight: '10vw', padding: '60px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Eye size={64} color="var(--accent-color)" style={{ marginBottom: '30px' }} />
             <h3 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>Augmented Reality (AR)</h3>
             <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>Overlaying dynamic digital information onto the physical world, enhancing situational awareness and interactivity.</p>
           </div>
-          
+
           <div className="glass-panel" style={{ width: '70vw', height: '50vh', flexShrink: 0, marginRight: '10vw', padding: '60px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Infinity size={64} color="var(--accent-color)" style={{ marginBottom: '30px' }} />
             <h3 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>Mixed Reality (MR)</h3>
             <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>Blending physical and digital worlds where physical and digital objects co-exist and interact in real-time.</p>
           </div>
-          
+
           <div className="glass-panel" style={{ width: '70vw', height: '50vh', flexShrink: 0, marginRight: '20vw', padding: '60px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Cpu size={64} color="var(--accent-color)" style={{ marginBottom: '30px' }} />
             <h3 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>Spatial Tracking</h3>
             <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>Advanced algorithmic research into inside-out tracking, hand tracking, and spatial mapping utilizing neural networks.</p>
           </div>
-          
+
         </div>
       </section>
 
@@ -179,17 +179,17 @@ const Home = () => {
       <section id="facts-section" style={{ padding: '100px 10%', display: 'flex', justifyContent: 'space-between', gap: '40px', flexWrap: 'wrap', background: 'transparent' }}>
         <div className="glass-panel" style={{ flex: 1, padding: '40px', textAlign: 'center' }}>
           <Activity size={40} color="var(--accent-color)" style={{ marginBottom: '20px' }} />
-          <h3 style={{ fontSize: '4rem', margin: 0 }} className="stat-counter" data-target="150">0</h3>
+          <h3 style={{ fontSize: '4rem', margin: 0 }} className="stat-counter" data-target="50">0</h3>
           <p>Projects Completed</p>
         </div>
         <div className="glass-panel" style={{ flex: 1, padding: '40px', textAlign: 'center' }}>
           <Users size={40} color="var(--accent-color)" style={{ marginBottom: '20px' }} />
-          <h3 style={{ fontSize: '4rem', margin: 0 }} className="stat-counter" data-target="45">0</h3>
+          <h3 style={{ fontSize: '4rem', margin: 0 }} className="stat-counter" data-target="5">0</h3>
           <p>Industry Partners</p>
         </div>
         <div className="glass-panel" style={{ flex: 1, padding: '40px', textAlign: 'center' }}>
           <Settings size={40} color="var(--accent-color)" style={{ marginBottom: '20px' }} />
-          <h3 style={{ fontSize: '4rem', margin: 0 }} className="stat-counter" data-target="12">0</h3>
+          <h3 style={{ fontSize: '4rem', margin: 0 }} className="stat-counter" data-target="2">0</h3>
           <p>Active Patents</p>
         </div>
       </section>
@@ -197,16 +197,16 @@ const Home = () => {
       {/* SECTION: Projects */}
       <section id="projects-section" style={{ padding: '100px 10%', background: 'transparent' }}>
         <h2 className="reveal-text text-gradient" style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '60px' }}>Ongoing Innovations</h2>
-        
+
         {projects.length === 0 ? (
-           <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No projects available yet.</p>
+          <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No projects available yet.</p>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' }}>
             {projects.map((project) => (
               <div key={project.id} className="glass-panel reveal-text" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ 
-                  height: '200px', 
-                  backgroundColor: 'var(--accent-color)', 
+                <div style={{
+                  height: '200px',
+                  backgroundColor: 'var(--accent-color)',
                   opacity: project.imageUrl ? 1 : 0.2,
                   backgroundImage: project.imageUrl ? `url(${project.imageUrl})` : 'none',
                   backgroundSize: 'cover',
@@ -215,12 +215,12 @@ const Home = () => {
                 <div style={{ padding: '30px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <h3 style={{ marginBottom: '10px' }}>{project.title}</h3>
                   <p style={{ color: 'var(--text-muted)', flex: 1 }}>{project.description}</p>
-                  
+
                   {project.repoLink && (
-                    <a href={project.repoLink} target="_blank" rel="noreferrer" style={{ 
-                      display: 'inline-flex', alignItems: 'center', color: 'var(--accent-color)', fontWeight: 600, textDecoration: 'none', marginTop: '20px' 
+                    <a href={project.repoLink} target="_blank" rel="noreferrer" style={{
+                      display: 'inline-flex', alignItems: 'center', color: 'var(--accent-color)', fontWeight: 600, textDecoration: 'none', marginTop: '20px'
                     }}>
-                      View Repository <ArrowRight size={16} style={{marginLeft:'8px'}}/>
+                      View Repository <ArrowRight size={16} style={{ marginLeft: '8px' }} />
                     </a>
                   )}
                 </div>
@@ -234,13 +234,14 @@ const Home = () => {
       <section id="collaborators-section" style={{ padding: '60px 0', backgroundColor: 'rgba(0, 115, 103, 0.85)', backdropFilter: 'blur(5px)', color: '#fff', overflow: 'hidden' }}>
         <h3 style={{ textAlign: 'center', color: '#fff', marginBottom: '40px' }} className="reveal-text">Supported By Industry Leaders</h3>
         <div style={{ display: 'flex', width: '200%', animation: 'marquee 15s linear infinite' }}>
-          {[1,2,3,4,5,6,7,8].map(i => (
+          {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
             <div key={i} style={{ flex: 1, whiteSpace: 'nowrap', fontSize: '1.5rem', fontWeight: 600, opacity: 0.7 }}>
-              PARTNER CO. {i} 
+              PARTNER CO. {i}
             </div>
           ))}
         </div>
-        <style dangerouslySetInnerHTML={{__html: `
+        <style dangerouslySetInnerHTML={{
+          __html: `
           @keyframes marquee { 
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
@@ -253,7 +254,7 @@ const Home = () => {
         <h2 className="reveal-text text-gradient" style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '60px' }}>Leadership & Engineering</h2>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '40px', justifyContent: 'center' }}>
           {[
-            { role: 'Assistant Director', name: 'Dr. Jane Smith' },
+            { role: 'Director', name: 'Dr. Kranthi Kiran' },
             { role: 'Project Engineer', name: 'John Doe' },
             { role: 'Technical Assistant', name: 'Alex Wong' }
           ].map((member, i) => (
@@ -271,15 +272,24 @@ const Home = () => {
         <div className="reveal-text" style={{ flex: 1, minWidth: '300px' }}>
           <h2 className="text-gradient" style={{ fontSize: '3rem' }}>Our Laboratory</h2>
           <p>
-            Nestled inside the core technology block, our facility boasts world-class VR treadmills, haptic feedback suits, and high-fidelity rendering clusters.
+            Nestled inside the CRL-2 Building in GITAM University , Vizag .The lab is well equipped with high end VR headsets, Haptic suits, AR devices, Motion Capture systems, and high end rendering systems to support the research and development in the field of Extended Reality.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '20px', fontWeight: 600 }}>
-            <MapPin color="var(--accent-color)" /> Tech Park, Innovation Block 4
+            <MapPin color="var(--accent-color)" /> CRL-2 Building, GITAM University, Vizag
           </div>
         </div>
-        <div className="glass-panel reveal-text" style={{ flex: 1, minWidth: '300px', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {/* Static Map Placeholder, could be an embedded iframe */}
-          <h3 style={{ color: 'var(--accent-color)' }}>Interactive 3D Map Loading...</h3>
+        <div
+          className="glass-panel reveal-text"
+          style={{ flex: 1, minWidth: '300px', height: '400px', overflow: 'hidden' }}
+        >
+          <iframe
+            src="https://www.google.com/maps?q=17.7806717,83.3752585&z=15&output=embed"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen=""
+            loading="lazy"
+          ></iframe>
         </div>
       </section>
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { db } from "../firebase/firebaseConfig";
 import { collection, getDocs, addDoc } from "firebase/firestore";
 
@@ -63,17 +64,23 @@ export default function RequestForm() {
 
     return (
 
-        <div className="inventory-sys-wrapper" style={{ padding: "80px 20px", display: "flex", justifyContent: "center" }}>
+        <div className="inventory-sys-wrapper" style={{ padding: "80px 20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            
+            <div style={{ width: "100%", maxWidth: "600px", display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
+                <Link to="/" className="btn-primary" style={{ padding: "10px 20px", textDecoration: "none" }}>&larr; Back to Home</Link>
+            </div>
+
             <div className="glass-panel" style={{ width: "100%", maxWidth: "600px", padding: "40px" }}>
+
                 <h2 className="text-gradient" style={{ textAlign: "center", marginBottom: "30px", fontSize: "2rem" }}>Equipment Request</h2>
 
                 <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-                    
+
                     <input name="name" placeholder="Full Name" onChange={handleChange} required className="form-input" />
                     <input name="email" placeholder="Email" onChange={handleChange} required className="form-input" />
                     <input name="phone" placeholder="Phone Number" onChange={handleChange} required className="form-input" />
                     <input name="year" placeholder="Year" onChange={handleChange} required className="form-input" />
-                    
+
                     <select name="product" onChange={handleChange} required className="form-input">
                         <option value="">Select Product from Inventory</option>
                         {products.map((p) => (
@@ -82,9 +89,9 @@ export default function RequestForm() {
                             </option>
                         ))}
                     </select>
-                    
+
                     <textarea name="purpose" placeholder="Purpose / Motivation" onChange={handleChange} rows="4" className="form-input" />
-                    
+
                     <div style={{ display: "flex", gap: "15px" }}>
                         <div style={{ flex: 1 }}>
                             <label style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginBottom: "5px", display: "block" }}>Start Time</label>

@@ -19,7 +19,7 @@ export default function AdminDashboard() {
 
     const [requests, setRequests] = useState([])
     const [inventory, setInventory] = useState([])
-    const [newProduct, setNewProduct] = useState({ name: "", available: 0 })
+    const [newProduct, setNewProduct] = useState({ name: "", available: 0, imageUrl: "" })
     const [stats, setStats] = useState({
         total: 0,
         pending: 0,
@@ -30,10 +30,14 @@ export default function AdminDashboard() {
     const [showcaseProjects, setShowcaseProjects] = useState([])
     const [newProject, setNewProject] = useState({ title: "", description: "", repoLink: "", imageUrl: "" })
 
+    // CONTACT MESSAGES
+    const [contactRequests, setContactRequests] = useState([])
+
     useEffect(() => {
         loadRequests()
         loadInventory()
         loadShowcaseProjects()
+        loadContactRequests()
     }, [])
 
     const loadRequests = async () => {
@@ -84,9 +88,10 @@ export default function AdminDashboard() {
         if (!newProduct.name.trim() || newProduct.available < 0) return
         await addDoc(collection(db, "products"), {
             name: newProduct.name.trim(),
-            available: Number(newProduct.available)
+            available: Number(newProduct.available),
+            imageUrl: newProduct.imageUrl || ""
         })
-        setNewProduct({ name: "", available: 0 })
+        setNewProduct({ name: "", available: 0, imageUrl: "" })
         loadInventory()
     }
 
@@ -108,6 +113,17 @@ export default function AdminDashboard() {
         setShowcaseProjects(list)
     }
 
+    const loadContactRequests = async () => {
+        const snapshot = await getDocs(collection(db, "contact_messages"));
+        const list = [];
+        snapshot.forEach(docSnap => {
+            list.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        // sort by newest
+        list.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds);
+        setContactRequests(list);
+    }
+
     const handleAddProject = async (e) => {
         e.preventDefault()
         if (!newProject.title.trim() || !newProject.description.trim()) return
@@ -123,9 +139,16 @@ export default function AdminDashboard() {
     }
 
     const handleDeleteProject = async (id) => {
-        if(window.confirm("Are you sure you want to delete this project?")) {
+        if (window.confirm("Are you sure you want to delete this project?")) {
             await deleteDoc(doc(db, "projects_showcase", id))
             loadShowcaseProjects()
+        }
+    }
+
+    const handleDeleteProduct = async (id) => {
+        if (window.confirm("Are you sure you want to delete this device?")) {
+            await deleteDoc(doc(db, "products", id))
+            loadInventory()
         }
     }
 
@@ -133,8 +156,8 @@ export default function AdminDashboard() {
     const sendApprovalMail = (request) => {
 
         emailjs.send(
-            "service_m40e3oi",
-            "template_9azo75c",
+            "service_7jr63zq",
+            "template_zqtua62",
             {
                 name: request.name,
                 email: request.email,
@@ -142,9 +165,29 @@ export default function AdminDashboard() {
                 start: request.startTime,
                 end: request.endTime
             },
-            "fEe8-gn6xJArF7pnO"
+            "CxtFzvtGd24TLXplS"
         )
             .then(() => console.log("Email sent"))
+            .catch((err) => console.log("Email error", err))
+
+    }
+
+    const sendRejectionMail = (request) => {
+
+        emailjs.send(
+            "service_7jr63zq",
+            "template_zqtua62", // Note: Replace this with your Rejection Template ID if you have created a separate one!
+            {
+                name: request.name,
+                email: request.email,
+                product: request.product,
+                start: request.startTime,
+                end: request.endTime,
+                status: "Rejected"
+            },
+            "CxtFzvtGd24TLXplS"
+        )
+            .then(() => console.log("Rejection email sent"))
             .catch((err) => console.log("Email error", err))
 
     }
@@ -228,6 +271,8 @@ export default function AdminDashboard() {
             status: "rejected"
         })
 
+        sendRejectionMail(request)
+
         loadRequests()
 
     }
@@ -265,8 +310,30 @@ export default function AdminDashboard() {
 
     const pending = requests.filter(r => r.status === "pending")
     const history = requests.filter(
-        r => r.status === "approved" || r.status === "rejected"
+        r => r.status === "approved" || r.status === "rejected" || r.status === "returned"
     )
+
+    const downloadCSV = () => {
+        if (history.length === 0) {
+            alert("No history to download");
+            return;
+        }
+
+        const headers = ["Name", "Email", "Product", "Status", "Start Time", "End Time"];
+        const rows = history.map(r => {
+            const start = r.startTime?.seconds ? new Date(r.startTime.seconds * 1000).toLocaleString() : r.startTime;
+            const end = r.endTime?.seconds ? new Date(r.endTime.seconds * 1000).toLocaleString() : r.endTime;
+            return `"${r.name}","${r.email}","${r.product}","${r.status}","${start}","${end}"`;
+        });
+
+        const csvContent = headers.join(",") + "\n" + rows.join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.setAttribute("href", url);
+        a.setAttribute("download", "renting_history.csv");
+        a.click();
+    };
 
     return (
 
@@ -356,8 +423,13 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* History Section */}
-                <div className="glass-panel" style={{ padding: "30px", overflowX: "auto" }}>
-                    <h2 style={{ marginBottom: "20px", color: "var(--text-main)" }}>Request History</h2>
+                <div className="glass-panel" style={{ padding: "30px", overflowX: "auto", marginBottom: "50px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                        <h2 style={{ color: "var(--text-main)", margin: 0 }}>Request History</h2>
+                        <button onClick={downloadCSV} className="btn-primary" style={{ padding: "8px 15px", backgroundColor: "var(--accent-color)" }}>
+                            Download CSV
+                        </button>
+                    </div>
 
                     <table style={tableStyle}>
                         <thead>
@@ -378,13 +450,13 @@ export default function AdminDashboard() {
                                     <td style={tdStyle}>{r.email}</td>
                                     <td style={tdStyle}><strong>{r.product}</strong></td>
                                     <td style={tdStyle}>
-                                        <span style={{ 
-                                            padding: "5px 10px", 
-                                            borderRadius: "15px", 
+                                        <span style={{
+                                            padding: "5px 10px",
+                                            borderRadius: "15px",
                                             fontSize: "0.85rem",
                                             fontWeight: "600",
                                             backgroundColor: r.status === "approved" ? "rgba(16, 185, 129, 0.2)" : "rgba(239, 68, 68, 0.2)",
-                                            color: r.status === "approved" ? "#10b981" : "#ef4444" 
+                                            color: r.status === "approved" ? "#10b981" : "#ef4444"
                                         }}>
                                             {r.status.toUpperCase()}
                                         </span>
@@ -412,39 +484,91 @@ export default function AdminDashboard() {
                     </table>
                 </div>
 
+                {/* Contact Queries Section */}
+                <div className="glass-panel" style={{ padding: "30px", marginBottom: "50px", overflowX: "auto" }}>
+                    <h2 style={{ marginBottom: "20px", color: "var(--text-main)" }}>Contact Messages</h2>
+
+                    <table style={tableStyle}>
+                        <thead>
+                            <tr>
+                                <th style={thStyle}>Date & Time</th>
+                                <th style={thStyle}>Name</th>
+                                <th style={thStyle}>Email</th>
+                                <th style={thStyle}>Phone</th>
+                                <th style={thStyle}>Reason</th>
+                                <th style={thStyle}>Study Info</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {contactRequests.map((c) => (
+                                <tr key={c.id} style={trStyle}>
+                                    <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
+                                        {c.createdAt?.seconds
+                                            ? new Date(c.createdAt.seconds * 1000).toLocaleString()
+                                            : "N/A"}
+                                    </td>
+                                    <td style={tdStyle}><strong>{c.name}</strong></td>
+                                    <td style={tdStyle}>{c.email}</td>
+                                    <td style={tdStyle}>{c.phone}</td>
+                                    <td style={tdStyle}>{c.reason}</td>
+                                    <td style={tdStyle}>Year {c.yearOfStudy} - {c.fieldOfStudy}</td>
+                                </tr>
+                            ))}
+                            {contactRequests.length === 0 && (
+                                <tr>
+                                    <td colSpan="6" style={{ ...tdStyle, textAlign: "center", color: "var(--text-muted)" }}>No contact messages found.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
                 {/* Inventory Management Section */}
-                <div className="glass-panel" style={{ padding: "30px", marginTop: "50px", overflowX: "auto" }}>
+                <div className="glass-panel" style={{ padding: "30px", marginBottom: "50px", overflowX: "auto" }}>
                     <h2 style={{ marginBottom: "20px", color: "var(--text-main)" }}>Inventory Management</h2>
-                    
+
                     {/* Add Product Form */}
                     <form onSubmit={handleAddProduct} style={{
                         display: "flex", gap: "15px", marginBottom: "30px", alignItems: "flex-end", flexWrap: "wrap"
                     }}>
                         <div style={{ display: "flex", flexDirection: "column", gap: "5px", flex: "1", minWidth: "200px" }}>
                             <label style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>New Device Name</label>
-                            <input 
-                                type="text" 
-                                placeholder="e.g. Meta Quest 3" 
+                            <input
+                                type="text"
+                                placeholder="e.g. Meta Quest 3"
                                 value={newProduct.name}
-                                onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                                onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                                 style={{
                                     padding: "10px 15px", borderRadius: "8px", border: "1px solid var(--border-color)",
                                     backgroundColor: "rgba(255, 255, 255, 0.05)", color: "var(--text-main)"
-                                }} 
+                                }}
                                 required
+                            />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "5px", flex: "1", minWidth: "150px" }}>
+                            <label style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Image URL (optional)</label>
+                            <input
+                                type="url"
+                                placeholder="https://..."
+                                value={newProduct.imageUrl}
+                                onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
+                                style={{
+                                    padding: "10px 15px", borderRadius: "8px", border: "1px solid var(--border-color)",
+                                    backgroundColor: "rgba(255, 255, 255, 0.05)", color: "var(--text-main)"
+                                }}
                             />
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "5px", width: "120px" }}>
                             <label style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Initial Qty</label>
-                            <input 
-                                type="number" 
-                                min="0" 
+                            <input
+                                type="number"
+                                min="0"
                                 value={newProduct.available}
-                                onChange={(e) => setNewProduct({...newProduct, available: e.target.value})}
+                                onChange={(e) => setNewProduct({ ...newProduct, available: e.target.value })}
                                 style={{
                                     padding: "10px 15px", borderRadius: "8px", border: "1px solid var(--border-color)",
                                     backgroundColor: "rgba(255, 255, 255, 0.05)", color: "var(--text-main)"
-                                }} 
+                                }}
                                 required
                             />
                         </div>
@@ -456,19 +580,24 @@ export default function AdminDashboard() {
                     <table style={tableStyle}>
                         <thead>
                             <tr>
+                                <th style={thStyle}>Image</th>
                                 <th style={thStyle}>Device Name</th>
                                 <th style={thStyle}>Available Quantity</th>
                                 <th style={thStyle}>Update Stock</th>
+                                <th style={thStyle}>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {inventory.map((item) => (
                                 <tr key={item.id} style={trStyle}>
+                                    <td style={tdStyle}>
+                                        {item.imageUrl ? <img src={item.imageUrl} alt={item.name} style={{ width: "50px", height: "50px", objectFit: "cover", borderRadius: "5px" }} /> : "N/A"}
+                                    </td>
                                     <td style={tdStyle}><strong>{item.name}</strong></td>
                                     <td style={tdStyle}>
-                                        <span style={{ 
-                                            padding: "5px 15px", 
-                                            borderRadius: "15px", 
+                                        <span style={{
+                                            padding: "5px 15px",
+                                            borderRadius: "15px",
                                             backgroundColor: item.available > 0 ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)",
                                             color: item.available > 0 ? "#10b981" : "#ef4444",
                                             fontWeight: "bold"
@@ -478,29 +607,32 @@ export default function AdminDashboard() {
                                     </td>
                                     <td style={tdStyle}>
                                         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                                            <button 
+                                            <button
                                                 onClick={() => handleUpdateQuantity(item.id, item.available, -1)}
-                                                className="btn-primary" 
+                                                className="btn-primary"
                                                 style={{ padding: "5px 15px", backgroundColor: "rgba(255, 255, 255, 0.1)", color: "var(--text-main)" }}
                                                 disabled={item.available <= 0}
                                             >
                                                 -
                                             </button>
                                             <span style={{ width: "20px", textAlign: "center", color: "var(--text-main)" }}>{item.available}</span>
-                                            <button 
+                                            <button
                                                 onClick={() => handleUpdateQuantity(item.id, item.available, 1)}
-                                                className="btn-primary" 
+                                                className="btn-primary"
                                                 style={{ padding: "5px 15px", backgroundColor: "rgba(255, 255, 255, 0.1)", color: "var(--text-main)" }}
                                             >
                                                 +
                                             </button>
                                         </div>
                                     </td>
+                                    <td style={tdStyle}>
+                                        <button onClick={() => handleDeleteProduct(item.id)} className="btn-primary" style={{ backgroundColor: "#ef4444", padding: "5px 15px" }}>Delete</button>
+                                    </td>
                                 </tr>
                             ))}
                             {inventory.length === 0 && (
                                 <tr>
-                                    <td colSpan="3" style={{ ...tdStyle, textAlign: "center", color: "var(--text-muted)" }}>No inventory devices found.</td>
+                                    <td colSpan="5" style={{ ...tdStyle, textAlign: "center", color: "var(--text-muted)" }}>No inventory devices found.</td>
                                 </tr>
                             )}
                         </tbody>
@@ -510,58 +642,58 @@ export default function AdminDashboard() {
                 {/* Project Management Section */}
                 <div className="glass-panel" style={{ padding: "30px", marginTop: "50px", overflowX: "auto" }}>
                     <h2 style={{ marginBottom: "20px", color: "var(--text-main)" }}>Project Showcase Management</h2>
-                    
+
                     <form onSubmit={handleAddProject} style={{
                         display: "flex", gap: "15px", marginBottom: "30px", alignItems: "flex-end", flexWrap: "wrap"
                     }}>
                         <div style={{ display: "flex", flexDirection: "column", gap: "5px", flex: "1", minWidth: "200px" }}>
                             <label style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Project Title</label>
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 value={newProject.title}
-                                onChange={(e) => setNewProject({...newProject, title: e.target.value})}
+                                onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
                                 style={{
                                     padding: "10px 15px", borderRadius: "8px", border: "1px solid var(--border-color)",
                                     backgroundColor: "rgba(255, 255, 255, 0.05)", color: "var(--text-main)"
-                                }} 
+                                }}
                                 required
                             />
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "5px", flex: "2", minWidth: "300px" }}>
                             <label style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Description</label>
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 value={newProject.description}
-                                onChange={(e) => setNewProject({...newProject, description: e.target.value})}
+                                onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                                 style={{
                                     padding: "10px 15px", borderRadius: "8px", border: "1px solid var(--border-color)",
                                     backgroundColor: "rgba(255, 255, 255, 0.05)", color: "var(--text-main)"
-                                }} 
+                                }}
                                 required
                             />
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "5px", flex: "1", minWidth: "150px" }}>
                             <label style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Repository Link</label>
-                            <input 
-                                type="url" 
+                            <input
+                                type="url"
                                 value={newProject.repoLink}
-                                onChange={(e) => setNewProject({...newProject, repoLink: e.target.value})}
+                                onChange={(e) => setNewProject({ ...newProject, repoLink: e.target.value })}
                                 style={{
                                     padding: "10px 15px", borderRadius: "8px", border: "1px solid var(--border-color)",
                                     backgroundColor: "rgba(255, 255, 255, 0.05)", color: "var(--text-main)"
-                                }} 
+                                }}
                             />
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "5px", flex: "1", minWidth: "150px" }}>
                             <label style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Image URL</label>
-                            <input 
-                                type="url" 
+                            <input
+                                type="url"
                                 value={newProject.imageUrl}
-                                onChange={(e) => setNewProject({...newProject, imageUrl: e.target.value})}
+                                onChange={(e) => setNewProject({ ...newProject, imageUrl: e.target.value })}
                                 style={{
                                     padding: "10px 15px", borderRadius: "8px", border: "1px solid var(--border-color)",
                                     backgroundColor: "rgba(255, 255, 255, 0.05)", color: "var(--text-main)"
-                                }} 
+                                }}
                             />
                         </div>
                         <button type="submit" className="btn-primary" style={{ padding: "10px 20px", height: "42px" }}>

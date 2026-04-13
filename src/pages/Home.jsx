@@ -14,6 +14,7 @@ gsap.registerPlugin(ScrollTrigger);
 const Home = () => {
   const mainRef = useRef();
   const [projects, setProjects] = useState([]);
+  const [inventory, setInventory] = useState([]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -28,7 +29,22 @@ const Home = () => {
         console.error("Failed to fetch projects:", err);
       }
     };
+
+    const fetchInventory = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, "products"));
+        const list = [];
+        snapshot.forEach((docSnap) => {
+          list.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        setInventory(list);
+      } catch (err) {
+        console.error("Failed to fetch inventory:", err);
+      }
+    };
+
     fetchProjects();
+    fetchInventory();
   }, []);
 
   useLayoutEffect(() => {
@@ -230,6 +246,62 @@ const Home = () => {
         )}
       </section>
 
+      {/* SECTION: Hardware Inventory (Carousel) */}
+      <section id="inventory-carousel-section" style={{ padding: '60px 0', backgroundColor: 'rgba(0, 115, 103, 0.1)', overflow: 'hidden' }}>
+        <h2 className="reveal-text text-gradient" style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '60px' }}>Our Hardware Inventory</h2>
+        
+        {inventory.length > 0 ? (
+          <div style={{ display: 'flex', width: `${inventory.length * 200}%`, animation: 'inventoryMarquee 30s linear infinite' }}>
+            {/* Double the list to make it fully infinite/seamless */}
+            {[...inventory, ...inventory].map((item, index) => (
+              <div key={`${item.id}-${index}`} className="glass-panel" style={{ 
+                flex: 1, 
+                minWidth: '250px',
+                maxWidth: '300px',
+                margin: '0 20px',
+                padding: '20px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center',
+                textAlign: 'center'
+              }}>
+                <div style={{
+                  width: '100%',
+                  height: '180px',
+                  backgroundColor: 'var(--accent-color)',
+                  opacity: item.imageUrl ? 1 : 0.2,
+                  backgroundImage: item.imageUrl ? `url(${item.imageUrl})` : 'none',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  borderRadius: '8px',
+                  marginBottom: '15px'
+                }}></div>
+                <h3 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>{item.name}</h3>
+                <span style={{ 
+                    padding: '5px 15px', 
+                    borderRadius: '15px', 
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    backgroundColor: item.available > 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                    color: item.available > 0 ? '#10b981' : '#ef4444' 
+                }}>
+                    {item.available > 0 ? `${item.available} Available` : 'Out of Stock'}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Inventory list loading...</p>
+        )}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+          @keyframes inventoryMarquee { 
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+        `}} />
+      </section>
+
       {/* SECTION: Collaborators (Marquee) */}
       <section id="collaborators-section" style={{ padding: '60px 0', backgroundColor: 'rgba(0, 115, 103, 0.85)', backdropFilter: 'blur(5px)', color: '#fff', overflow: 'hidden' }}>
         <h3 style={{ textAlign: 'center', color: '#fff', marginBottom: '40px' }} className="reveal-text">Supported By Industry Leaders</h3>
@@ -254,14 +326,24 @@ const Home = () => {
         <h2 className="reveal-text text-gradient" style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '60px' }}>Leadership & Engineering</h2>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '40px', justifyContent: 'center' }}>
           {[
-            { role: 'Director', name: 'Dr. Kranthi Kiran' },
-            { role: 'Project Engineer', name: 'John Doe' },
-            { role: 'Technical Assistant', name: 'Alex Wong' }
+            { role: 'Director', name: 'Dr. Kranthi Kiran', img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=80' },
+            { role: 'Project Engineer', name: 'John Doe', img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=300&q=80' },
+            { role: 'Technical Assistant', name: 'Alex Wong', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80' }
           ].map((member, i) => (
             <div key={i} className="glass-panel reveal-text" style={{ padding: '40px', width: '300px', textAlign: 'center' }}>
-              <div style={{ width: '100px', height: '100px', borderRadius: '50%', backgroundColor: '#ddd', margin: '0 auto 20px' }}></div>
+              <div style={{ 
+                width: '120px', 
+                height: '120px', 
+                borderRadius: '50%', 
+                backgroundColor: '#ddd', 
+                margin: '0 auto 20px',
+                backgroundImage: `url(${member.img})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                border: '4px solid var(--accent-color)'
+              }}></div>
               <h3>{member.name}</h3>
-              <p style={{ color: 'var(--accent-color)', fontWeight: 600 }}>{member.role}</p>
+              <p style={{ color: 'var(--text-muted)', fontWeight: 600 }}>{member.role}</p>
             </div>
           ))}
         </div>
@@ -280,13 +362,13 @@ const Home = () => {
         </div>
         <div
           className="glass-panel reveal-text"
-          style={{ flex: 1, minWidth: '300px', height: '400px', overflow: 'hidden' }}
+          style={{ flex: 1, minWidth: '300px', height: '400px', overflow: 'hidden', padding: 0 }}
         >
           <iframe
-            src="https://www.google.com/maps?q=17.7806717,83.3752585&z=15&output=embed"
+            src="https://www.google.com/maps?q=17.7806717,83.3752585&z=18&t=k&output=embed"
             width="100%"
             height="100%"
-            style={{ border: 0 }}
+            style={{ border: 0, filter: 'contrast(1.1) brightness(0.9)' }}
             allowFullScreen=""
             loading="lazy"
           ></iframe>

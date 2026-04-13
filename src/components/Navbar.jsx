@@ -54,7 +54,6 @@ const Navbar = () => {
               boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
             }}>
               <Link to="/request" style={dropdownLinkStyle}>Request Form</Link>
-              <Link to="/admin" style={dropdownLinkStyle}>Admin Login</Link>
             </div>
           )}
         </div>

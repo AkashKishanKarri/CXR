@@ -20,8 +20,12 @@ const Navbar = () => {
       borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
       color: '#fff'
     }}>
-      <h2 style={{ margin: 0 }}>
-        <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ color: '#fff', textDecoration: 'none' }}>CXR</Link>
+      <h2 style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+        <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', gap: '15px' }}>
+          <img src="/CXR.png" alt="CXR" style={{ height: '40px', objectFit: 'contain' }} />
+          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.2rem', fontWeight: 300, userSelect: 'none' }}>X</span>
+          <img src="/image.png" alt="GITAM" style={{ height: '35px', objectFit: 'contain' }} /> // Gitam logo
+        </Link>
       </h2>
 
       <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>

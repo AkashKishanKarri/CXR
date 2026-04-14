@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Environment, Float, MeshDistortMaterial, ContactShadows, useGLTF, useAnimations, useFBX } from '@react-three/drei';
+import { OrbitControls, Environment, Float, MeshDistortMaterial, ContactShadows, useGLTF, useAnimations, useFBX, Loader } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -119,6 +119,7 @@ useGLTF.preload('/meta-quest-3/source/Quest3.glb');
 
 const ThreeCanvas = () => {
   return (
+    <>
     <div id="canvas-container" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0, pointerEvents: 'none' }}>
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }} gl={{ antialias: true, alpha: true }}>
         <ambientLight intensity={0.5} />
@@ -136,6 +137,14 @@ const ThreeCanvas = () => {
         {/* <OrbitControls enableZoom={false} enablePan={false} /> */}
       </Canvas>
     </div>
+    <Loader 
+      containerStyles={{ background: 'transparent', zIndex: 100 }} 
+      innerStyles={{ width: '300px', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '10px' }} 
+      barStyles={{ backgroundColor: 'var(--accent-color)' }} 
+      dataStyles={{ fontSize: '1.2rem', fontFamily: 'var(--font-sans)', color: 'var(--accent-color)', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}
+      dataInterpolation={(p) => `Loading Reality ${p.toFixed(0)}%`} 
+    />
+    </>
   );
 };
 

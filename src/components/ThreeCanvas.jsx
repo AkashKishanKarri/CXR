@@ -102,11 +102,11 @@ const StandaloneVRHeadsetModel = () => {
 
         {/* Floating fine tech rings surrounding the headset */}
         <mesh position={[0, -0.4, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[1.5, 0.015, 16, 128]} />
+          <torusGeometry args={[1.5, 0.015, 16, 64]} />
           <meshStandardMaterial color="#00ffd5" emissive="#007367" emissiveIntensity={0.8} transparent opacity={0.7} />
         </mesh>
         <mesh position={[0, 0.6, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[1.1, 0.01, 16, 128]} />
+          <torusGeometry args={[1.1, 0.01, 16, 64]} />
           <meshStandardMaterial color="#00ffd5" emissive="#007367" emissiveIntensity={0.5} transparent opacity={0.4} />
         </mesh>
 
@@ -115,23 +115,27 @@ const StandaloneVRHeadsetModel = () => {
   );
 };
 
+// Preload models for faster startup
 useGLTF.preload('/meta-quest-3/source/Quest3.glb');
+useFBX.preload('/quest-2-controller/source/Quest2Controller.fbx');
 
 const ThreeCanvas = () => {
   return (
     <>
     <div id="canvas-container" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0, pointerEvents: 'none' }}>
-      <Canvas camera={{ position: [0, 0, 5], fov: 45 }} gl={{ antialias: true, alpha: true }}>
+      {/* Capped dpr and set performance target to automatically scale down resolution if lagging */}
+      <Canvas camera={{ position: [0, 0, 5], fov: 45 }} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }} dpr={[1, 1.5]} performance={{ min: 0.5 }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1.5} color="#FFFFFF" />
         <pointLight position={[-10, -10, -5]} color="#007367" intensity={2} />
         <Suspense fallback={null}>
           <StandaloneVRHeadsetModel />
         </Suspense>
-        {/* Ground shadow for depth */}
-        <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={10} blur={2.5} far={4} color="#007367" />
+        {/* ContactShadows is highly computationally expensive. Render it exactly 1 time, with low resolution */}
+        <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={10} blur={2.5} far={4} color="#007367" resolution={256} frames={1} />
 
-        <Environment preset="city" />
+        {/* Load a low-res environment map */}
+        <Environment preset="city" resolution={128} />
 
         {/* Controls optional, but user interaction is via mouse position tracked in useFrame */}
         {/* <OrbitControls enableZoom={false} enablePan={false} /> */}

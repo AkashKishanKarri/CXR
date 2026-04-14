@@ -41,7 +41,7 @@ const Navbar = () => {
           onMouseLeave={() => setDropdownOpen(false)}
         >
           <button style={{ ...linkStyle, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
-            Add More <ChevronDown size={16} />
+            More <ChevronDown size={16} />
           </button>
 
           {dropdownOpen && (

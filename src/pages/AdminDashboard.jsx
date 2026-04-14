@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
-import { db } from "../firebase/firebaseConfig"
+import { Link, useNavigate } from "react-router-dom"
+import { db, auth } from "../firebase/firebaseConfig"
+import { onAuthStateChanged } from "firebase/auth"
 
 import {
     collection,
@@ -31,7 +32,14 @@ const formatDate = (dateValue) => {
     });
 };
 
+const ALLOWED_EMAILS = [
+    "akashkishankarri@gmail.com",
+    "admin@cxr.edu"
+]
+
 export default function AdminDashboard() {
+
+    const navigate = useNavigate()
 
     const [requests, setRequests] = useState([])
     const [inventory, setInventory] = useState([])
@@ -50,11 +58,18 @@ export default function AdminDashboard() {
     const [contactRequests, setContactRequests] = useState([])
 
     useEffect(() => {
-        loadRequests()
-        loadInventory()
-        loadShowcaseProjects()
-        loadContactRequests()
-    }, [])
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (!user || !ALLOWED_EMAILS.includes(user.email)) {
+                navigate("/admin", { replace: true })
+            } else {
+                loadRequests()
+                loadInventory()
+                loadShowcaseProjects()
+                loadContactRequests()
+            }
+        })
+        return () => unsubscribe()
+    }, [navigate])
 
     const loadRequests = async () => {
 

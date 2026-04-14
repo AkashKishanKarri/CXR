@@ -249,19 +249,19 @@ const Home = () => {
       {/* SECTION: Hardware Inventory (Carousel) */}
       <section id="inventory-carousel-section" style={{ padding: '60px 0', backgroundColor: 'rgba(0, 115, 103, 0.1)', overflow: 'hidden' }}>
         <h2 className="reveal-text text-gradient" style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '60px' }}>Our Hardware Inventory</h2>
-        
+
         {inventory.length > 0 ? (
           <div style={{ display: 'flex', width: `${inventory.length * 200}%`, animation: 'inventoryMarquee 30s linear infinite' }}>
             {/* Double the list to make it fully infinite/seamless */}
             {[...inventory, ...inventory].map((item, index) => (
-              <div key={`${item.id}-${index}`} className="glass-panel" style={{ 
-                flex: 1, 
+              <div key={`${item.id}-${index}`} className="glass-panel" style={{
+                flex: 1,
                 minWidth: '250px',
                 maxWidth: '300px',
                 margin: '0 20px',
-                padding: '20px', 
-                display: 'flex', 
-                flexDirection: 'column', 
+                padding: '20px',
+                display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
                 textAlign: 'center'
               }}>
@@ -277,7 +277,7 @@ const Home = () => {
                   marginBottom: '15px'
                 }}></div>
                 <h3 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>{item.name}</h3>
-                <span style={{ 
+                {/* <span style={{ 
                     padding: '5px 15px', 
                     borderRadius: '15px', 
                     fontSize: '0.9rem',
@@ -286,7 +286,7 @@ const Home = () => {
                     color: item.available > 0 ? '#10b981' : '#ef4444' 
                 }}>
                     {item.available > 0 ? `${item.available} Available` : 'Out of Stock'}
-                </span>
+                </span> */}
               </div>
             ))}
           </div>
@@ -306,9 +306,9 @@ const Home = () => {
       <section id="collaborators-section" style={{ padding: '60px 0', backgroundColor: 'rgba(0, 115, 103, 0.85)', backdropFilter: 'blur(5px)', color: '#fff', overflow: 'hidden' }}>
         <h3 style={{ textAlign: 'center', color: '#fff', marginBottom: '40px' }} className="reveal-text">Supported By Industry Leaders</h3>
         <div style={{ display: 'flex', width: '200%', animation: 'marquee 15s linear infinite' }}>
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-            <div key={i} style={{ flex: 1, whiteSpace: 'nowrap', fontSize: '1.5rem', fontWeight: 600, opacity: 0.7 }}>
-              PARTNER CO. {i}
+          {['Nexus VR', 'MetaWorks', 'InnovateXR', 'Quantum Dynamics', 'AeroSystems', 'Synergy Tech', 'Apex Immersive', 'Visionary', 'SpatialAI', 'HoloTech'].map((company, i) => (
+            <div key={i} style={{ flex: 1, whiteSpace: 'nowrap', fontSize: '1.5rem', fontWeight: 600, opacity: 0.7, padding: '0 40px' }}>
+              {company}
             </div>
           ))}
         </div>
@@ -331,11 +331,11 @@ const Home = () => {
             { role: 'Technical Assistant', name: 'Alex Wong', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80' }
           ].map((member, i) => (
             <div key={i} className="glass-panel reveal-text" style={{ padding: '40px', width: '300px', textAlign: 'center' }}>
-              <div style={{ 
-                width: '120px', 
-                height: '120px', 
-                borderRadius: '50%', 
-                backgroundColor: '#ddd', 
+              <div style={{
+                width: '120px',
+                height: '120px',
+                borderRadius: '50%',
+                backgroundColor: '#ddd',
                 margin: '0 auto 20px',
                 backgroundImage: `url(${member.img})`,
                 backgroundSize: 'cover',

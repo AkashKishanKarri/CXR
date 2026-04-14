@@ -15,6 +15,22 @@ import {
 
 import emailjs from "@emailjs/browser"
 
+const formatDate = (dateValue) => {
+    if (!dateValue) return "N/A";
+    let d;
+    if (dateValue.seconds) {
+        d = new Date(dateValue.seconds * 1000);
+    } else {
+        d = new Date(dateValue);
+    }
+    if (isNaN(d.getTime())) return String(dateValue);
+    
+    return d.toLocaleString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: 'numeric', minute: '2-digit', hour12: true
+    });
+};
+
 export default function AdminDashboard() {
 
     const [requests, setRequests] = useState([])
@@ -244,21 +260,19 @@ export default function AdminDashboard() {
 
         const productSnap = await getDocs(q)
 
-        productSnap.forEach(async (p) => {
-
+        for (const p of productSnap.docs) {
             const productRef = doc(db, "products", p.id)
-
             const current = p.data().available
 
             await updateDoc(productRef, {
                 available: current - 1
             })
-
-        })
+        }
 
         sendApprovalMail(request)
 
         loadRequests()
+        loadInventory()
 
     }
 
@@ -292,19 +306,17 @@ export default function AdminDashboard() {
 
         const snapshot = await getDocs(q)
 
-        snapshot.forEach(async (p) => {
-
+        for (const p of snapshot.docs) {
             const productRef = doc(db, "products", p.id)
-
             const current = p.data().available
 
             await updateDoc(productRef, {
                 available: current + 1
             })
-
-        })
+        }
 
         loadRequests()
+        loadInventory()
 
     }
 
@@ -321,8 +333,8 @@ export default function AdminDashboard() {
 
         const headers = ["Name", "Email", "Product", "Status", "Start Time", "End Time"];
         const rows = history.map(r => {
-            const start = r.startTime?.seconds ? new Date(r.startTime.seconds * 1000).toLocaleString() : r.startTime;
-            const end = r.endTime?.seconds ? new Date(r.endTime.seconds * 1000).toLocaleString() : r.endTime;
+            const start = formatDate(r.startTime);
+            const end = formatDate(r.endTime);
             return `"${r.name}","${r.email}","${r.product}","${r.status}","${start}","${end}"`;
         });
 
@@ -391,16 +403,8 @@ export default function AdminDashboard() {
                                     <td style={tdStyle}>{r.email}</td>
                                     <td style={tdStyle}><strong>{r.product}</strong></td>
                                     <td style={tdStyle}>{r.purpose}</td>
-                                    <td style={tdStyle}>
-                                        {r.startTime?.seconds
-                                            ? new Date(r.startTime.seconds * 1000).toLocaleString()
-                                            : r.startTime}
-                                    </td>
-                                    <td style={tdStyle}>
-                                        {r.endTime?.seconds
-                                            ? new Date(r.endTime.seconds * 1000).toLocaleString()
-                                            : r.endTime}
-                                    </td>
+                                    <td style={tdStyle}>{formatDate(r.startTime)}</td>
+                                    <td style={tdStyle}>{formatDate(r.endTime)}</td>
                                     <td style={tdStyle}>
                                         <div style={{ display: "flex", gap: "10px" }}>
                                             <button onClick={() => approveRequest(r)} className="btn-primary" style={{ padding: "8px 15px", backgroundColor: "#10b981" }}>
@@ -461,8 +465,8 @@ export default function AdminDashboard() {
                                             {r.status.toUpperCase()}
                                         </span>
                                     </td>
-                                    <td style={tdStyle}>{r.startTime}</td>
-                                    <td style={tdStyle}>{r.endTime}</td>
+                                    <td style={tdStyle}>{formatDate(r.startTime)}</td>
+                                    <td style={tdStyle}>{formatDate(r.endTime)}</td>
                                     <td style={tdStyle}>
                                         {r.status === "approved" && (
                                             <button onClick={() => returnDevice(r)} className="btn-primary" style={{ padding: "8px 15px" }}>

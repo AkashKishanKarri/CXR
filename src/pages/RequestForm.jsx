@@ -115,6 +115,7 @@ export default function RequestForm() {
                     background: rgba(255, 255, 255, 0.5);
                     color: var(--text-main);
                     font-family: var(--font-sans);
+                    color-scheme: light dark;
                     outline: none;
                     transition: all 0.3s ease;
                 }

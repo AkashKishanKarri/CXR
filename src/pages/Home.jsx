@@ -306,7 +306,7 @@ const Home = () => {
       <section id="collaborators-section" style={{ padding: '60px 0', backgroundColor: 'rgba(0, 115, 103, 0.85)', backdropFilter: 'blur(5px)', color: '#fff', overflow: 'hidden' }}>
         <h3 style={{ textAlign: 'center', color: '#fff', marginBottom: '40px' }} className="reveal-text">Supported By Industry Leaders</h3>
         <div style={{ display: 'flex', width: '200%', animation: 'marquee 15s linear infinite' }}>
-          {['Nexus VR', 'MetaWorks', 'InnovateXR', 'Quantum Dynamics', 'AeroSystems', 'Synergy Tech', 'Apex Immersive', 'Visionary', 'SpatialAI', 'HoloTech'].map((company, i) => (
+          {['HCL', 'INS KALINGA', 'GITAM DENTAL', 'ELURU POLICE', 'Synergy Tech', 'Apex Immersive', 'Visionary', 'SpatialAI', 'HoloTech'].map((company, i) => (
             <div key={i} style={{ flex: 1, whiteSpace: 'nowrap', fontSize: '1.5rem', fontWeight: 600, opacity: 0.7, padding: '0 40px' }}>
               {company}
             </div>
@@ -326,9 +326,9 @@ const Home = () => {
         <h2 className="reveal-text text-gradient" style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '60px' }}>Leadership & Engineering</h2>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '40px', justifyContent: 'center' }}>
           {[
-            { role: 'Director', name: 'Dr. Kranthi Kiran', img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=80' },
-            { role: 'Project Engineer', name: 'John Doe', img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=300&q=80' },
-            { role: 'Technical Assistant', name: 'Alex Wong', img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80' }
+            { role: 'Head of Centre for Extended Reality', name: 'Dr. M. Kranthi Kiran', img: 'https://www.gitam.edu/sites/default/files/faculty/500621_1743676447.jpg' },
+            { role: 'Project Engineer', name: 'M. Naveen', img: 'https://i.ibb.co/7ddNVRh1/Whats-App-Image-2026-04-15-at-14-30-22.jpg' },
+            { role: 'Technical Assistant', name: 'T. Sunil Kumar', img: 'https://i.ibb.co/ynVNXRXP/image-2026-04-15-142024379.png' }
           ].map((member, i) => (
             <div key={i} className="glass-panel reveal-text" style={{ padding: '40px', width: '300px', textAlign: 'center' }}>
               <div style={{

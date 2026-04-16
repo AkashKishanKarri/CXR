@@ -29,7 +29,7 @@ const Navbar = () => {
       </h2>
 
       <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
-        <Link to="/" style={linkStyle}>Home</Link>
+        <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={linkStyle}>Home</Link>
         <a href="/#mission-section" style={linkStyle}>Mission & Vision</a>
         <a href="/#work-section" style={linkStyle}>Field of Work</a>
         <a href="/#projects-section" style={linkStyle}>Projects</a>

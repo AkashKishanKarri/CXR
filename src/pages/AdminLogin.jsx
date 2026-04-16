@@ -11,7 +11,11 @@ export default function AdminLogin() {
     // Define authorized admin emails here
     const ALLOWED_EMAILS = [
         "akashkishankarri@gmail.com",
-        "skedaris2@gitam.in"
+        "skedaris2@gitam.in",
+        "nmeesala@gitam.edu",
+        "skotha4@gitam.in",
+        "seegam@gitam.in",
+        "dummycxr@gmail.com"
     ]
 
     const handleGoogleLogin = async () => {

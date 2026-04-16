@@ -326,7 +326,7 @@ const Home = () => {
         <h2 className="reveal-text text-gradient" style={{ fontSize: '3rem', textAlign: 'center', marginBottom: '60px' }}>Leadership & Engineering</h2>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '40px', justifyContent: 'center' }}>
           {[
-            { role: 'Head of Centre for Extended Reality', name: 'Dr. M. Kranthi Kiran', img: 'https://www.gitam.edu/sites/default/files/faculty/500621_1743676447.jpg' },
+            { role: 'Head of Centre for Extended Reality', name: 'Dr. M. Kranthi Kiran', img: 'https://i.ibb.co/Qvs5QvK2/KKsir.jpg' },
             { role: 'Project Engineer', name: 'M. Naveen', img: 'https://i.ibb.co/7ddNVRh1/Whats-App-Image-2026-04-15-at-14-30-22.jpg' },
             { role: 'Technical Assistant', name: 'T. Sunil Kumar', img: 'https://i.ibb.co/ynVNXRXP/image-2026-04-15-142024379.png' }
           ].map((member, i) => (
